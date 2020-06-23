@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/plj-websocket-server.iml" filepath="$PROJECT_DIR$/plj-websocket-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vct-websocket.iml" filepath="$PROJECT_DIR$/vct-websocket.iml" />
+    </modules>
+  </component>
+</project>

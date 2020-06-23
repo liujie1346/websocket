@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天室</title>
+    <script src="static/js/jquery-1.10.2.min.js"></script>
+    <!--<script src="js/pako.min.js"></script>  用于压缩资源 -->
+    <script src="static/layer/layer.js"></script>
+    <link rel="stylesheet" href="static/css/index.css">
+</head>
+<body>
+<div class="left">
+    <div id="from">
+        当前用户<br>
+    </div>
+</div>
+<div class="right">
+    <form class="form">
+        <strong>聊天框</strong>
+        <input type="text" id="test1" placeholder="当前用户id">
+        <input type="button" onclick="openWs()" value="上线"/>
+        <input type="button" onclick="closeWs()" value="下线"/>
+        <hr>
+        <div class="chat" style="overflow: auto">
+            <span id="result"></span>
+        </div>
+        <hr>
+        是否群发：
+        <select id="isMore">
+            <option value="0">是</option>
+            <option value="1">否</option>
+        </select>
+        <input type="text" id="test" placeholder="用户id_内容"/>
+        <input type="button" onclick="send()" value="发送"/>
+    </form>
+</div>
+<script>
+    $(function () {
+        $.ajax({
+            url: "http://localhost:8888/pljWs/api/user/findAll",
+            data: {},
+            type: "GET",
+            success: function (e) {
+                console.table(e);
+                e.map(i => {
+                    $("#from").append(new Date().getHours()+":"+i.name + '***ID:' + i.id + '<hr/>');
+                })
+            },
+            error: function (msg) {
+                console.log(msg);
+            },
+        });
+    })
+
+    let socket;
+
+    function openWs() {
+        let currId = $("#test1").val();
+        console.log("当前用户ID:",currId);
+        if (typeof (WebSocket) == "undefined") {
+            console.log("您的浏览器不支持WebSocket");
+        } else {
+            console.log("支持WebSocket");
+        }
+        socket = new WebSocket("ws://localhost:8888/pljWs/webSocket/"+currId);
+        // socket.connectionTimeout = 3000;
+        // socket.binaryType = "arraybuffer";
+        socket.onopen = function () {
+            console.log("WebSocket onopen at time: " + new Date());
+        };
+        socket.onclose = function () {
+            console.log("WebSocket onclose at time: " + new Date());
+        };
+        socket.onerror = function () {
+            console.log("WebSocket onerror at time: " + new Date());
+        };
+
+        socket.onmessage = function (event) {
+            console.log("WebSocket onmessage at time: " + new Date());
+            // console.log("结果：",event);
+            let raw_data = event.data;
+            console.log("结果 ：", raw_data);
+            $("#result").append(nowTime () + "：" + raw_data + "<br>");
+            // let json = pako.inflate(raw_data, { to: "string" });
+        }
+    }
+    //下线
+    function closeWs(){
+        socket.close();
+    }
+
+    /**  表示连接状态
+     *    0 - 表示连接尚未建立。
+     *    1 - 表示连接已建立，可以进行通信。
+     *    2 - 表示连接正在进行关闭。
+     *    3 - 表示连接已经关闭或者连接不能打开。
+     * */
+    setInterval(() => {
+        console.log("WebSocket readyState value: " + socket.readyState);
+    }, 10000);
+
+    //message內部方法
+    function scMessage(v1,v2) {
+        socket.send(JSON.stringify({
+            "isMore": v1,
+            "req": v2
+        }));
+    }
+
+    function send() {
+        let v1 = $("#isMore").val();
+        let v2 = $("#test").val();
+        console.log(v1,"发送：", v2);
+        scMessage(v1,v2);
+    }
+
+    //****************工具类*****************
+    function nowTime () {
+        let date = new Date();
+        return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    }
+</script>
+</body>
+</html>

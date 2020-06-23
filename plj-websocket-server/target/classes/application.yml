@@ -1,0 +1,10 @@
+#设置环境配置
+spring:
+  profiles:
+    active: dev
+#swagger配置
+springfox:
+  documentation:
+    swagger:
+      v2:
+        host: www.xxxx.com

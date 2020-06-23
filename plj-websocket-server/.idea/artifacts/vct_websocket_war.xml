@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="vct-websocket:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="vct-ws.war">
+      <element id="artifact" artifact-name="vct-websocket:war exploded" />
+    </root>
+  </artifact>
+</component>
